@@ -1,9 +1,9 @@
 import pandas as pd
 
 datasets = {
-    "train": ("Data/train.csv", "Store"),
-    "test": ("Data/test.csv", "Id"),
-    "store": ("Data/store.csv", "Store")
+    "train": ("../Data/train.csv", "Store"),
+    "test": ("../Data/test.csv", "Id"),
+    "store": ("../Data/store.csv", "Store")
 }
 
 for name, (path, id_col) in datasets.items():
@@ -13,6 +13,7 @@ for name, (path, id_col) in datasets.items():
     missing = df.isnull().stack()
     missing = missing[missing]
     missing.index.names = [id_col, "column"]
+
 
     missing_df = missing.reset_index()[[id_col, "column"]]
     missing_df.to_csv(f"missing_in_{name}.csv", index=False)
