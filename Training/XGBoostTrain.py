@@ -29,7 +29,7 @@ df['Month'] = df['Date'].dt.month
 df['Year']  = df['Date'].dt.year
 df = df.sort_values(['Store', 'Date']).reset_index(drop=True)
 
-# Filter open stores only — closed days have Sales=0 which misleads model
+
 df = df[df['Open'] == 1].reset_index(drop=True)
 
 print(f"  Dataset shape after filtering closed days: {df.shape}")
@@ -43,9 +43,7 @@ df['lag_30'] = df.groupby('Store')['lag_30'].transform(lambda x: x.ffill().bfill
 
 print("STEP 3 — Applying log transform to Sales...")
 
-# log1p(x) = log(x+1) — handles zeros safely
-# This compresses large outliers and makes distribution more normal
-# Model learns better on log scale, we reverse it with expm1 at the end
+
 df['Sales_log'] = np.log1p(df['Sales'])
 
 
@@ -58,17 +56,15 @@ print(f"  Features: {FEATURES}")
 
 print("STEP 5 — Splitting data chronologically...")
 
-# Sort by date globally — not per store
-# This ensures test set is always the most recent 20% of dates
 df       = df.sort_values('Date').reset_index(drop=True)
 split    = int(len(df) * 0.80)
 train    = df.iloc[:split]
 test     = df.iloc[split:]
 
 X_train  = train[FEATURES]
-y_train  = train['Sales_log']   # train on log scale
+y_train  = train['Sales_log']
 X_test   = test[FEATURES]
-y_test   = test['Sales']        # evaluate on original scale
+y_test   = test['Sales']
 
 print(f"  Train shape : {train.shape}")
 print(f"  Test shape  : {test.shape}")
@@ -90,15 +86,15 @@ base_model = XGBRegressor(
 
 base_model.fit(X_train, y_train)
 
-base_pred     = np.expm1(base_model.predict(X_test))  # reverse log transform
-base_pred     = np.clip(base_pred, 0, None)            # clip negatives
+base_pred     = np.expm1(base_model.predict(X_test))
+base_pred     = np.clip(base_pred, 0, None)
 
 base_mae  = mean_absolute_error(y_test, base_pred)
 base_rmse = np.sqrt(mean_squared_error(y_test, base_pred))
 base_mape = mean_absolute_percentage_error(y_test, base_pred)
 base_r2   = r2_score(y_test, base_pred)
 
-print(f"\n── Base Model Performance ───────────────────────────────")
+print(f"\n Base Model Performance")
 print(f"  MAE  : {base_mae:.2f}")
 print(f"  RMSE : {base_rmse:.2f}")
 print(f"  MAPE : {base_mape:.2f}%")
@@ -147,7 +143,7 @@ final_rmse  = np.sqrt(mean_squared_error(y_test, final_pred))
 final_mape  = mean_absolute_percentage_error(y_test, final_pred)
 final_r2    = r2_score(y_test, final_pred)
 
-print(f"\n── Final Model Performance ──────────────────────────────")
+print(f"\n Final Model Performance ")
 print(f"  MAE  : {final_mae:.2f}")
 print(f"  RMSE : {final_rmse:.2f}")
 print(f"  MAPE : {final_mape:.2f}%")
@@ -165,9 +161,9 @@ shap_values  = explainer(shap_sample)
 shap.summary_plot(shap_values, shap_sample, show=False)
 plt.title("SHAP Feature Importance — XGBoost", fontweight='bold')
 plt.tight_layout()
-plt.savefig("../Data/Forecasts/shap_summary.png", dpi=150, bbox_inches='tight')
+plt.savefig("../Data/Graphs/shap_summary.png", dpi=150, bbox_inches='tight')
 plt.show()
-print("✅ SHAP plot saved → ../Data/Forecasts/shap_summary.png")
+print(" SHAP plot saved → ../Data/Graphs/shap_summary.png")
 
 # Bar plot — mean absolute SHAP values
 shap.summary_plot(shap_values, shap_sample, plot_type='bar', show=False)
@@ -175,7 +171,7 @@ plt.title("SHAP Feature Importance (Bar) — XGBoost", fontweight='bold')
 plt.tight_layout()
 plt.savefig("../Data/Forecasts/shap_bar.png", dpi=150, bbox_inches='tight')
 plt.show()
-print("✅ SHAP bar plot saved → ../Data/Forecasts/shap_bar.png")
+print(" SHAP bar plot saved → ../Data/Graphs/shap_bar.png")
 
 
 results         = test[['Date', 'Store', 'Sales']].copy()
@@ -193,13 +189,13 @@ plt.xlabel("Date")
 plt.ylabel("Sales")
 plt.legend()
 plt.tight_layout()
-plt.savefig("../Data/Forecasts/xgboost_actual_vs_predicted.png", dpi=150)
+plt.savefig("../Data/Graphs/xgboost_actual_vs_predicted.png", dpi=150)
 plt.show()
 
 
 joblib.dump(final_model, "../Models/xgboost_model.pkl")
-print("\n✅ Final model saved → ../Models/xgboost_model.pkl")
+print("\n Final model saved → ../Models/xgboost_model.pkl")
 
 # Save best params
 pd.DataFrame([study.best_params]).to_csv("../Models/xgboost_best_params.csv", index=False)
-print("✅ Best params saved → ../Models/xgboost_best_params.csv")
+print(" Best params saved → ../Models/xgboost_best_params.csv")

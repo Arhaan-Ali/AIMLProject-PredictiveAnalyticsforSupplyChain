@@ -27,7 +27,7 @@ df['Date'] = pd.to_datetime(df['Date'])
 df = df.sort_values(['Store', 'Date']).reset_index(drop=True)
 
 
-years    = list(range(2013, 2016))
+years    = list(range(2013, 2015))
 holidays = make_holidays_df(year_list=years, country='DE')
 
 
@@ -120,30 +120,11 @@ print(f"  R²   : {r2:.4f}")
 print(f"{'='*45}")
 
 
-store_metrics = []
-for store_id, group in all_forecasts.groupby('Store'):
-    s_mae  = mean_absolute_error(group['y'], group['yhat'])
-    s_rmse = np.sqrt(mean_squared_error(group['y'], group['yhat']))
-    s_mape = mean_absolute_percentage_error(group['y'], group['yhat'])
-    s_r2   = 1 - (np.sum((group['y'] - group['yhat'])**2) /
-                  np.sum((group['y'] - group['y'].mean())**2))
-    store_metrics.append([store_id, s_mae, s_rmse, s_mape, s_r2])
-
-metrics_df = pd.DataFrame(store_metrics, columns=['Store', 'MAE', 'RMSE', 'MAPE', 'R2'])
-
-print(f"\n── Top 5 Best Stores (lowest MAPE):")
-print(metrics_df.nsmallest(5, 'MAPE')[['Store', 'MAE', 'RMSE', 'MAPE', 'R2']].to_string(index=False))
-
-print(f"\n── Top 5 Worst Stores (highest MAPE):")
-print(metrics_df.nlargest(5, 'MAPE')[['Store', 'MAE', 'RMSE', 'MAPE', 'R2']].to_string(index=False))
 
 print(f"\n── Metrics Distribution:")
 print(f"  MAPE — min: {metrics_df['MAPE'].min():.2f}%  |  mean: {metrics_df['MAPE'].mean():.2f}%  |  max: {metrics_df['MAPE'].max():.2f}%")
 print(f"  MAE  — min: {metrics_df['MAE'].min():.2f}   |  mean: {metrics_df['MAE'].mean():.2f}   |  max: {metrics_df['MAE'].max():.2f}")
 print(f"  R²   — min: {metrics_df['R2'].min():.4f}  |  mean: {metrics_df['R2'].mean():.4f}  |  max: {metrics_df['R2'].max():.4f}")
-
-metrics_df.to_csv("../Data/Processed Data/store_metrics.csv", index=False)
-print(f"\n Store metrics saved → ../Data/Processed Data/store_metrics.csv")
 
 
 plt.figure(figsize=(15, 5))
@@ -152,7 +133,7 @@ plt.plot(all_forecasts['ds'], all_forecasts['yhat'], label='Predicted', alpha=0.
 plt.legend()
 plt.title("Actual vs Predicted Sales — All Stores")
 plt.tight_layout()
-plt.savefig("../Data/Processed Data/prophet_actual_vs_predicted.png", dpi=150)
+plt.savefig("../Data/Processed Data/Graphs/prophet_actual_vs_predicted.png", dpi=150)
 plt.show()
 
 
@@ -165,5 +146,5 @@ plt.xlabel("MAPE (%)")
 plt.ylabel("Number of Stores")
 plt.legend()
 plt.tight_layout()
-plt.savefig("../Data/Processed Data/prophet_mape_distribution.png", dpi=150)
+plt.savefig("../Data/Processed Data/Graphs/prophet_mape_distribution.png", dpi=150)
 plt.show()
