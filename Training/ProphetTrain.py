@@ -17,7 +17,7 @@ def mean_absolute_percentage_error(y_true, y_pred):
     return np.mean(np.abs((y_true[mask] - y_pred[mask]) / y_true[mask])) * 100
 
 REGRESSORS = [
-    'DayOfWeek', 'Customers', 'Open', 'Promo',
+    'DayOfWeek', 'Open', 'Promo',
      'rolling_7', 'lag_7', 'lag_14', 'rolling_30', 'days_since_promo'
 ]
 
@@ -119,14 +119,6 @@ print(f"  MAPE : {mape:.2f}%")
 print(f"  R²   : {r2:.4f}")
 print(f"{'='*45}")
 
-
-
-print(f"\n── Metrics Distribution:")
-print(f"  MAPE — min: {metrics_df['MAPE'].min():.2f}%  |  mean: {metrics_df['MAPE'].mean():.2f}%  |  max: {metrics_df['MAPE'].max():.2f}%")
-print(f"  MAE  — min: {metrics_df['MAE'].min():.2f}   |  mean: {metrics_df['MAE'].mean():.2f}   |  max: {metrics_df['MAE'].max():.2f}")
-print(f"  R²   — min: {metrics_df['R2'].min():.4f}  |  mean: {metrics_df['R2'].mean():.4f}  |  max: {metrics_df['R2'].max():.4f}")
-
-
 plt.figure(figsize=(15, 5))
 plt.plot(all_forecasts['ds'], all_forecasts['y'],    label='Actual',    alpha=0.7)
 plt.plot(all_forecasts['ds'], all_forecasts['yhat'], label='Predicted', alpha=0.7)
@@ -134,17 +126,4 @@ plt.legend()
 plt.title("Actual vs Predicted Sales — All Stores")
 plt.tight_layout()
 plt.savefig("../Data/Processed Data/Graphs/prophet_actual_vs_predicted.png", dpi=150)
-plt.show()
-
-
-plt.figure(figsize=(12, 5))
-plt.hist(metrics_df['MAPE'], bins=50, color='steelblue', edgecolor='black')
-plt.axvline(metrics_df['MAPE'].mean(), color='red', linestyle='--',
-            label=f"Mean MAPE: {metrics_df['MAPE'].mean():.2f}%")
-plt.title("MAPE Distribution Across Stores")
-plt.xlabel("MAPE (%)")
-plt.ylabel("Number of Stores")
-plt.legend()
-plt.tight_layout()
-plt.savefig("../Data/Processed Data/Graphs/prophet_mape_distribution.png", dpi=150)
 plt.show()

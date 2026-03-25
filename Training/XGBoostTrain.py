@@ -161,17 +161,17 @@ shap_values  = explainer(shap_sample)
 shap.summary_plot(shap_values, shap_sample, show=False)
 plt.title("SHAP Feature Importance — XGBoost", fontweight='bold')
 plt.tight_layout()
-plt.savefig("../Data/Graphs/shap_summary.png", dpi=150, bbox_inches='tight')
+plt.savefig("../Data/Processed Data/Graphs/shap_summary.png", dpi=150, bbox_inches='tight')
 plt.show()
-print(" SHAP plot saved → ../Data/Graphs/shap_summary.png")
+print(" SHAP plot saved → ../Data/Processed Data/Graphs/shap_summary.png")
 
 # Bar plot — mean absolute SHAP values
 shap.summary_plot(shap_values, shap_sample, plot_type='bar', show=False)
 plt.title("SHAP Feature Importance (Bar) — XGBoost", fontweight='bold')
 plt.tight_layout()
-plt.savefig("../Data/Forecasts/shap_bar.png", dpi=150, bbox_inches='tight')
+plt.savefig("../Data/Processed Data/Graphs/shap_bar.png", dpi=150, bbox_inches='tight')
 plt.show()
-print(" SHAP bar plot saved → ../Data/Graphs/shap_bar.png")
+print(" SHAP bar plot saved → ../Data/Processed Data/Graphs/shap_bar.png")
 
 
 results         = test[['Date', 'Store', 'Sales']].copy()
@@ -189,7 +189,7 @@ plt.xlabel("Date")
 plt.ylabel("Sales")
 plt.legend()
 plt.tight_layout()
-plt.savefig("../Data/Graphs/xgboost_actual_vs_predicted.png", dpi=150)
+plt.savefig("../Data/Processed Data/Graphs/xgboost_actual_vs_predicted.png", dpi=150)
 plt.show()
 
 

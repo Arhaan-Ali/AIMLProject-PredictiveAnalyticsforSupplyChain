@@ -1,9 +1,7 @@
 import pandas as pd
 
 datasets = {
-    "train": ("../Data/train.csv", "Store"),
-    "test": ("../Data/test.csv", "Id"),
-    "store": ("../Data/store.csv", "Store")
+    "train": ("../Data/Processed Data/train_features.csv", "Store")
 }
 
 for name, (path, id_col) in datasets.items():
